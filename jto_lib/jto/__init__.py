@@ -1,19 +1,17 @@
 from dataclasses import fields, is_dataclass, Field, asdict
+from typing import get_args, get_origin
 
 
 class JTOConverter:
     @classmethod
     def __parse_list(cls, class_field, json_value: list):
-        if str(class_field.type)[:11] != 'typing.List' or len(str(class_field.type)) < 12:
+        if get_origin(class_field.type) != list or get_args(class_field.type) == ():
             raise ValueError(f'class_field type {str(class_field.type)} is not a supported list. '
                              f'Change type to List[YourClass]')
         if type(json_value) != list:
             raise ValueError(f'json_value type {str(type(json_value))} is not a list.')
 
-        class_type = str(class_field.type)[12:-1]
-        if class_type.find('__main__.') != -1:
-            class_type = class_type.replace('__main__.', '')
-        class_type = eval(class_type)
+        class_type = get_args(class_field.type)[0]
 
         items = []
         if is_dataclass(class_type):
