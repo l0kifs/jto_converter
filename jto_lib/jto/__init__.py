@@ -1,8 +1,10 @@
 from dataclasses import fields, is_dataclass, Field, asdict
-from typing import get_args, get_origin
+from typing import get_args, get_origin, TypeVar
 
 
 class JTOConverter:
+    T = TypeVar('T')
+
     @classmethod
     def __parse_list(cls, class_field, json_value: list):
         if get_origin(class_field.type) != list or get_args(class_field.type) == ():
@@ -44,17 +46,17 @@ class JTOConverter:
 
     @classmethod
     def __parse_dict(cls, dataclass_type, json_data: dict):
-        result = dataclass_type()
+        result: dataclass_type = dataclass_type()
         for dataclass_field in fields(dataclass_type):
             cls.__parse_dict_item(dataclass_field, json_data, result)
         return result
 
     @classmethod
-    def from_json(cls, dataclass_type, json_data: dict):
+    def from_json(cls, dataclass_type: T, json_data: dict) -> T:
         if not is_dataclass(dataclass_type):
             raise ValueError(f'Dataclass type expected, but received {str(type(dataclass_type))}')
-
-        return cls.__parse_dict(dataclass_type, json_data)
+        result = cls.__parse_dict(dataclass_type, json_data)
+        return result
 
     @classmethod
     def __drop_nones_in_list(cls, original_list: list) -> list:
@@ -81,7 +83,7 @@ class JTOConverter:
         return result_dict
 
     @classmethod
-    def to_json(cls, dataclass_obj, drop_empty_keys: bool = True):
+    def to_json(cls, dataclass_obj, drop_empty_keys: bool = True) -> dict:
         if not is_dataclass(dataclass_obj):
             raise ValueError(f'Dataclass type object expected, but received {str(type(dataclass_obj))}')
 
