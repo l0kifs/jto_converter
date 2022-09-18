@@ -36,7 +36,9 @@ class JTOConverter:
                     setattr(result_class, key, cls.__parse_list(class_field, value))
 
                 else:
-                    # TODO realise type checking if needed. First check if dataclass handles it or not
+                    if class_field.type != type(value):
+                        raise TypeError(f'Expected value type is {str(class_field.type)}, '
+                                        f'but received {str(type(value))}')
                     setattr(result_class, key, value)
 
                 return
