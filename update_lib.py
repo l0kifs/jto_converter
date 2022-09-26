@@ -1,7 +1,6 @@
 import os
 import shutil
 import subprocess
-import sys
 
 
 working_dir = os.path.dirname(os.path.abspath(__file__))
