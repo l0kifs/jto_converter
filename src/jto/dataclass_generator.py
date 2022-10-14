@@ -44,21 +44,31 @@ class ClassesTemplate:
         result_string = '\n\n'.join(class_strings)
         return result_string
 
+    def _parse_dict(self, result_class, key, value, is_list_item: bool = False):
+        cls_name = to_camel_case(key)
+        self.build_classes(cls_name, value)
+        if is_list_item:
+            result_class.class_fields.append(FieldTemplate(key, f'List[{cls_name}]', key))
+        else:
+            result_class.class_fields.append(FieldTemplate(key, cls_name, key))
+
+    def _parse_list(self, result_class, key, value):
+        if len(value) == 0:
+            result_class.class_fields.append(FieldTemplate(key, f'List[{object}]', key))
+        else:
+            list_element = value[0]
+            if type(list_element) == dict:
+                self._parse_dict(result_class, key, list_element, True)
+            else:
+                result_class.class_fields.append(FieldTemplate(key, f'List[{type(value).__qualname__}]', key))
+
     def build_classes(self, class_name: str, json_data: dict):
         result_class = ClassTemplate(class_name)
         for key, value in json_data.items():
             if type(value) == dict:
-                cls_name = to_camel_case(key)
-                self.build_classes(cls_name, value)
-                result_class.class_fields.append(FieldTemplate(key, cls_name, key))
+                self._parse_dict(result_class, key, value)
             elif type(value) == list:
-                list_element = value[0]
-                if type(list_element) == dict:
-                    cls_name = to_camel_case(key)
-                    self.build_classes(cls_name, list_element)
-                    result_class.class_fields.append(FieldTemplate(key, f'List[{cls_name}]', key))
-                else:
-                    result_class.class_fields.append(FieldTemplate(key, f'List[{type(value).__qualname__}]', key))
+                self._parse_list(result_class, key, value)
             else:
                 result_class.class_fields.append(FieldTemplate(key, type(value).__qualname__, key))
         self.classes.append(result_class)
