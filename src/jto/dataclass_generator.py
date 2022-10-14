@@ -66,7 +66,7 @@ class ClassesTemplate:
         result_class = ClassTemplate(class_name)
         for key, value in json_data.items():
             if type(value) == dict:
-                self._parse_dict(result_class, key, value)
+                self._parse_dict(result_class, key, value, False)
             elif type(value) == list:
                 self._parse_list(result_class, key, value)
             else:
