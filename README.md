@@ -13,7 +13,7 @@ field_name: str = field(default=None, metadata={'name': 'json_field_name', 'requ
 - field type should be strongly typed.   
 For example in case of field containing the list it should look like this `List[SomeClass]`
 - `default` field's value in the most cases will be `None`, but it also can be changed.
-- `name` is the name of the field in original json including.
+- `name` is the name of the field in original json.
 - `required` marked `True` if the field is required in the provided json.
 
 ## Examples
