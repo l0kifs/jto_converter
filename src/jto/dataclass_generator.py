@@ -1,5 +1,7 @@
 from dataclasses import dataclass, field
 
+from jto.undefined_field import Undefined
+
 
 def to_camel_case(text):
     s = text.replace("-", " ").replace("_", " ")
@@ -14,7 +16,7 @@ class FieldTemplate:
     field_name: str
     field_type: str
     json_field_name: str
-    default_value: any = None
+    default_value: any = Undefined.__name__
     required: bool = False
 
     def build_field_string(self) -> str:
