@@ -29,18 +29,20 @@ class JTOConverter:
     def __parse_dict_item(cls, class_field: Field, json_data: dict, result_class):
         for key, value in json_data.items():
             if class_field.metadata['name'] == key:
-                if is_dataclass(class_field.type):
-                    setattr(result_class, key, cls.__parse_dict(class_field.type, value))
-
-                elif str(class_field.type)[:11] == 'typing.List':
-                    setattr(result_class, key, cls.__parse_list(class_field, value))
-
+                if value is None:
+                    setattr(result_class, key, None)
                 else:
-                    if class_field.type != type(value):
-                        raise TypeError(f'Expected value type is {str(class_field.type)}, '
-                                        f'but received {str(type(value))}')
-                    setattr(result_class, key, value)
+                    if is_dataclass(class_field.type):
+                        setattr(result_class, key, cls.__parse_dict(class_field.type, value))
 
+                    elif str(class_field.type)[:11] == 'typing.List':
+                        setattr(result_class, key, cls.__parse_list(class_field, value))
+
+                    else:
+                        if class_field.type != type(value):
+                            raise TypeError(f'Expected value type is {str(class_field.type)}, '
+                                            f'but received {str(type(value))}')
+                        setattr(result_class, key, value)
                 return
 
         if class_field.metadata['required']:

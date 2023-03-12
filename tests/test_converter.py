@@ -1,5 +1,5 @@
-import json
 from dataclasses import dataclass, field
+from typing import List
 
 import pytest
 from jto import JTOConverter
@@ -17,6 +17,39 @@ def test_convert_empty_dict():
 
     json_object = JTOConverter.to_json(dataclass_object, drop_empty_keys=True)
     assert json_object == {}
+
+
+def test_convert_empty_list():
+    data = {"f1": []}
+
+    @dataclass
+    class Test:
+        f1: List[str] = field(default=None, metadata={'name': 'f1', 'required': False})
+
+    dataclass_object = JTOConverter.from_json(Test, data)
+    assert dataclass_object == Test(f1=[])
+
+
+def test_convert_dict_missing_required_field():
+    data = {}
+
+    @dataclass
+    class Test:
+        f1: str = field(default=None, metadata={'name': 'f1', 'required': True})
+
+    with pytest.raises(ValueError, match="Required field f1 not found in the data {}"):
+        JTOConverter.from_json(Test, data)
+
+
+def test_convert_dict_field_with_null_value():
+    data = {"f1": None}
+
+    @dataclass
+    class Test:
+        f1: str = field(default=None, metadata={'name': 'f1', 'required': False})
+
+    dataclass_object = JTOConverter.from_json(Test, data)
+    assert dataclass_object == Test()
 
 
 def test_convert_dict_with_unexpected_values():
