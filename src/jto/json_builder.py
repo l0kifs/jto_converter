@@ -5,7 +5,7 @@ from jto.undefined_field import Undefined
 
 class JsonBuilder:
     @classmethod
-    def to_json(cls, dataclass_obj, drop_nones: bool) -> dict:
+    def build_json(cls, dataclass_obj, drop_nones: bool) -> dict:
         if not is_dataclass(dataclass_obj):
             raise ValueError(f'Dataclass type object expected, but received "{str(type(dataclass_obj))}"')
 

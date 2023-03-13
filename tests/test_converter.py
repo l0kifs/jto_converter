@@ -15,7 +15,7 @@ def test_convert_empty_dict():
     dataclass_object = JTOConverter.from_json(Test, data)
     assert dataclass_object == Test()
 
-    json_object = JTOConverter.to_json(dataclass_object, drop_empty_keys=True)
+    json_object = JTOConverter.to_json(dataclass_object, drop_nones=True)
     assert json_object == {}
 
 
@@ -37,7 +37,7 @@ def test_convert_dict_missing_required_field():
     class Test:
         f1: str = field(default=None, metadata={'name': 'f1', 'required': True})
 
-    with pytest.raises(ValueError, match="Required field f1 not found in the data {}"):
+    with pytest.raises(ValueError, match='Required field "f1" not found in the data "{}"'):
         JTOConverter.from_json(Test, data)
 
 
@@ -70,7 +70,7 @@ def test_convert_value_with_unexpected_type():
     class Test:
         f1: str = field(default=None, metadata={'name': 'f1', 'required': False})
 
-    with pytest.raises(TypeError, match="Expected value type is <class 'str'>, but received <class 'int'>"):
+    with pytest.raises(TypeError, match='Expected value type is "<class \'str\'>", but received "<class \'int\'>"'):
         JTOConverter.from_json(Test, data)
 
 
@@ -84,7 +84,7 @@ def test_convert_dataclass_to_json():
 
     dataclass_object = Request(1, 'aaa', 2, 3.33)
 
-    json_object = JTOConverter.to_json(dataclass_object, drop_empty_keys=True)
+    json_object = JTOConverter.to_json(dataclass_object, drop_nones=True)
 
     expected_json = {'Id': 1, 'Customer': 'aaa', 'Quantity': 2, 'Price': 3.33}
     assert json_object == expected_json
