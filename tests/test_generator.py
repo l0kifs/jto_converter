@@ -30,5 +30,5 @@ def test_empty_list_value():
     assert str(test_classes) == str(expected_classes)
 
     classes_str = test_classes.build_classes_string()
-    assert classes_str == "@dataclass\nclass Response:\n    var: List[<class 'object'>] = " \
+    assert classes_str == "@dataclass\nclass Response:\n    var: Optional[List[<class 'object'>]] = " \
                           "field(default=Undefined, metadata={'name': 'var', 'required': False})"

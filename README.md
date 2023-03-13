@@ -1,15 +1,17 @@
 # JTO Converter
 
 ## Description
-Convert json object to dataclass and vice versa.  
+Convert json object to dataclass and vice versa.
+This package also provides tool for converting json object to dataclass template.
 
 ## Requirements
 ### Required structure of dataclass field
 All the parts of the below structure are required.
 ```python
-field_name: str = field(default=Undefined, metadata={'name': 'json_field_name', 'required': False})
+field_name: Optional[str] = field(default=Undefined, metadata={'name': 'json_field_name', 'required': False})
 ```
 - `field_name` can be any variable name.
+- keyword `Optional` indicates that the field is nullable.
 - field type should be strongly typed.   
 For example in case of field containing the list it should look like this `List[SomeClass]`
 - `default` default field's value. Set to `Undefined` by default.
@@ -26,7 +28,7 @@ then all dataclass fields with `None` values will not be converted to json field
 Convert json object to class objects
 ```python
 from dataclasses import dataclass, field
-from typing import List
+from typing import List, Optional
 
 from jto import JTOConverter
 from jto.undefined_field import Undefined
@@ -45,18 +47,18 @@ data = {
 
 @dataclass
 class Test:
-    f1: str = field(default=Undefined, metadata={'name': 'f1', 'required': False})
+    f1: Optional[str] = field(default=Undefined, metadata={'name': 'f1', 'required': False})
 
 @dataclass
 class Data:
-    first: str = field(default=Undefined, metadata={'name': 'first', 'required': False})
-    last: str = field(default=Undefined, metadata={'name': 'last', 'required': False})
-    test: List[Test] = field(default=Undefined, metadata={'name': 'test', 'required': False})
+    first: Optional[str] = field(default=Undefined, metadata={'name': 'first', 'required': False})
+    last: Optional[str] = field(default=Undefined, metadata={'name': 'last', 'required': False})
+    test: Optional[List[Test]] = field(default=Undefined, metadata={'name': 'test', 'required': False})
 
 @dataclass
 class Response:
-    status: int = field(default=Undefined, metadata={'name': 'status', 'required': False})
-    data: Data = field(default=Undefined, metadata={'name': 'data', 'required': False})
+    status: Optional[int] = field(default=Undefined, metadata={'name': 'status', 'required': False})
+    data: Optional[Data] = field(default=Undefined, metadata={'name': 'data', 'required': False})
 
 
 dataclass_object = JTOConverter.from_json(Response, data)

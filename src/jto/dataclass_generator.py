@@ -20,7 +20,7 @@ class FieldTemplate:
     required: bool = False
 
     def build_field_string(self) -> str:
-        field_string = f"{self.field_name}: {self.field_type} = field(default={str(self.default_value)}, " \
+        field_string = f"{self.field_name}: Optional[{self.field_type}] = field(default={str(self.default_value)}, " \
                        f"metadata={{'name': '{self.json_field_name}', 'required': {str(self.required)}}})"
         return field_string
 
@@ -62,7 +62,7 @@ class ClassesTemplate:
             if type(list_element) == dict:
                 self._parse_dict(result_class, key, list_element, True)
             else:
-                result_class.class_fields.append(FieldTemplate(key, f'List[{type(value).__qualname__}]', key))
+                result_class.class_fields.append(FieldTemplate(key, f'List[{type(list_element).__qualname__}]', key))
 
     def build_classes(self, class_name: str, json_data: dict):
         result_class = ClassTemplate(class_name)
