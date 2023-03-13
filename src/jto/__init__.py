@@ -91,7 +91,7 @@ class JTOConverter:
     #     return result_dict
 
     @classmethod
-    def to_json(cls, dataclass_obj, drop_nones: bool = True) -> dict:
+    def to_json(cls, dataclass_obj, drop_nones: bool = False) -> dict:
         # if not is_dataclass(dataclass_obj):
         #     raise ValueError(f'Dataclass type object expected, but received {str(type(dataclass_obj))}')
         #
