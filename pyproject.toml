@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "jto"
-version = "1.2.0"
+version = "1.2.1"
 description = "Convert json object to dataclass and vice versa"
 readme = "README.md"
 authors = [{ name = "l0kifs", email = "l0kifs91@gmail.com" }]

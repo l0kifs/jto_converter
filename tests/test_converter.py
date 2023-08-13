@@ -34,6 +34,8 @@ def test_convert_json_to_dataclass():
         addresses: Optional[List[Addresses]] = field(default=Undefined, metadata={'name': 'addresses', 'required': False})
 
     data_object = JTOConverter.from_json(Data, data)
+    assert data_object == Data(name='John Doe', ages=[10, 20, 30], book=Book(title='Python'),
+                               addresses=[Addresses(address='123 Main St')])
 
 
 def test_not_nullable_field():
