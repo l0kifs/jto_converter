@@ -8,13 +8,13 @@ This package also provides tool for converting json object to dataclass template
 ### Required structure of dataclass field
 All the parts of the below structure are required.
 ```python
-field_name: Optional[str] = field(default=Undefined, metadata={'name': 'json_field_name', 'required': False})
+field_name: Optional[FieldType] = field(default=Undefined, metadata={'name': 'json_field_name', 'required': False})
 ```
 - `field_name` can be any variable name.
 - keyword `Optional` indicates that the field is nullable.
-- field type should be strongly typed.   
+- `FieldType` should be strongly typed.   
 For example in case of field containing the list it should look like this `List[SomeClass]`
-- `default` default field's value. Set to `Undefined` by default.
+- `default` sets default field's value. Set to `Undefined` by default.
 - `name` is the name of the field in original json.
 - `required` marked `True` if the field is required in the provided json.
 
