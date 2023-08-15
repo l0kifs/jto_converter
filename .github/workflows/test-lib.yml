@@ -41,6 +41,9 @@ jobs:
     - name: Test with pytest
       run: |
         pytest --doctest-modules --cov=./src --cov-report=term-missing --cov-report=html --cov-fail-under=50
+    - name: Experiments
+      run: |
+        ls
     - name: Deploy
       uses: JamesIves/github-pages-deploy-action@v4
       with:
