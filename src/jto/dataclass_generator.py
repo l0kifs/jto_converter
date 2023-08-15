@@ -59,7 +59,7 @@ class ClassesTemplate:
             result_class.class_fields.append(FieldTemplate(key, f'List[{object}]', key))
         else:
             list_element = value[0]
-            if type(list_element) == dict:
+            if isinstance(list_element, dict):
                 self._parse_dict(result_class, key, list_element, True)
             else:
                 result_class.class_fields.append(FieldTemplate(key, f'List[{type(list_element).__qualname__}]', key))
@@ -67,9 +67,9 @@ class ClassesTemplate:
     def build_classes(self, class_name: str, json_data: dict):
         result_class = ClassTemplate(class_name)
         for key, value in json_data.items():
-            if type(value) == dict:
+            if isinstance(value, dict):
                 self._parse_dict(result_class, key, value, False)
-            elif type(value) == list:
+            elif isinstance(value, list):
                 self._parse_list(result_class, key, value)
             else:
                 result_class.class_fields.append(FieldTemplate(key, type(value).__qualname__, key))

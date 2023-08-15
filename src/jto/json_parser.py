@@ -1,4 +1,5 @@
 from dataclasses import is_dataclass, fields, Field
+from types import NoneType
 from typing import get_origin, get_args, TypeVar
 
 
@@ -24,7 +25,7 @@ class JsonParser:
     @classmethod
     def _is_field_nullable(cls, field: Field) -> bool:
         type_args = get_args(field.type)
-        if type(None) in type_args:
+        if NoneType in type_args:
             return True
         else:
             return False
@@ -32,8 +33,8 @@ class JsonParser:
     @classmethod
     def _get_field_type(cls, field: Field) -> type:
         type_args = get_args(field.type)
-        if type(None) in type_args:
-            return [arg for arg in type_args if arg != type(None)][0]
+        if NoneType in type_args:
+            return [arg for arg in type_args if arg is not NoneType][0]
         else:
             return field.type
 
@@ -72,8 +73,9 @@ class JsonParser:
         if get_origin(class_field_type) != list:
             raise ValueError(f'class_field type "{str(class_field_type)}" is not a list')
         if get_args(class_field_type) == ():
-            raise ValueError(f'class_field type "{str(class_field_type)}" is not a supported list. Change type to List[YourClass]')
-        if type(json_value) != list:
+            raise ValueError(f'class_field type "{str(class_field_type)}" is not a supported list. '
+                             f'Change type to List[YourClass]')
+        if not isinstance(json_value, list):
             raise ValueError(f'json_value type "{str(type(json_value))}" is not a list.')
 
         list_item_type = get_args(class_field_type)[0]
