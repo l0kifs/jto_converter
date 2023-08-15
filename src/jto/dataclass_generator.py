@@ -35,7 +35,7 @@ class ClassTemplate:
         self.class_fields: List[FieldTemplate] = []
 
     def build_class_string(self):
-        self._log.debug(f'Building class string for class template')
+        self._log.debug('Building class string for class template')
 
         class_string = f'@dataclass\nclass {self.class_name}:\n'
         class_field_strings = [cls_field.build_field_string() for cls_field in self.class_fields]
@@ -51,7 +51,7 @@ class DataclassGenerator:
 
     def build_classes_string(self, root_class_name: str,
                              json_data: dict):
-        self._log.debug(f'Building classes string from class templates')
+        self._log.debug('Building classes string from class templates')
 
         self._parse_dict(root_class_name, json_data)
         class_strings = [cls_temp.build_class_string() for cls_temp in self._class_templates]
@@ -60,7 +60,7 @@ class DataclassGenerator:
 
     def _parse_dict(self, dict_name: str,
                     dict_data: dict) -> FieldTemplate:
-        self._log.debug(f'Parsing dict')
+        self._log.debug('Parsing dict')
 
         class_name = to_camel_case(dict_name)
         class_template = ClassTemplate(class_name)
@@ -76,7 +76,7 @@ class DataclassGenerator:
 
     def _parse_list(self, list_name: str,
                     list_data: list) -> FieldTemplate:
-        self._log.debug(f'Parsing list')
+        self._log.debug('Parsing list')
 
         if len(list_data) == 0:
             field_type = f'List[{object}]'

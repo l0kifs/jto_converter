@@ -10,7 +10,7 @@ class JsonBuilder:
     @classmethod
     def build_json(cls, dataclass_obj,
                    drop_nones: bool) -> dict:
-        cls._log.debug(f'Building json from dataclass object')
+        cls._log.debug('Building json from dataclass object')
 
         if not is_dataclass(dataclass_obj):
             cls._log.error(f'Dataclass type object expected, but received "{str(type(dataclass_obj))}"', exc_info=True)
@@ -24,7 +24,7 @@ class JsonBuilder:
 
     @classmethod
     def _drop_undefined(cls, original_dict: dict) -> dict:
-        cls._log.debug(f'Dropping undefined fields from dict')
+        cls._log.debug('Dropping undefined fields from dict')
 
         result_dict = {}
         for key, value in original_dict.items():
@@ -39,7 +39,7 @@ class JsonBuilder:
 
     @classmethod
     def _drop_undefined_in_list(cls, original_list: list) -> list:
-        cls._log.debug(f'Dropping undefined fields from list')
+        cls._log.debug('Dropping undefined fields from list')
 
         result_list = []
         for value in original_list:
@@ -54,7 +54,7 @@ class JsonBuilder:
 
     @classmethod
     def _drop_nones(cls, original_dict: dict) -> dict:
-        cls._log.debug(f'Dropping None fields from dict')
+        cls._log.debug('Dropping None fields from dict')
 
         result_dict = {}
         for key, value in original_dict.items():
@@ -68,7 +68,7 @@ class JsonBuilder:
 
     @classmethod
     def _drop_nones_in_list(cls, original_list: list) -> list:
-        cls._log.debug(f'Dropping None fields from list')
+        cls._log.debug('Dropping None fields from list')
 
         result_list = []
         for value in original_list:

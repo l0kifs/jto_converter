@@ -18,7 +18,7 @@ class JTOConverter:
         :param json_data: json data
         :return: dataclass object
         """
-        cls._log.debug(f'Converting json to dataclass object')
+        cls._log.debug('Converting json to dataclass object')
         result = JsonParser.parse_json(dataclass_type, json_data)
         return result
 
@@ -31,6 +31,6 @@ class JTOConverter:
         :param drop_nones: drop None values
         :return: json object
         """
-        cls._log.debug(f'Converting dataclass object to json')
+        cls._log.debug('Converting dataclass object to json')
         result = JsonBuilder.build_json(dataclass_obj, drop_nones)
         return result

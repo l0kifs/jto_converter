@@ -11,7 +11,7 @@ class JsonParser:
     @classmethod
     def parse_json(cls, dataclass_type: T,
                    json_data: dict) -> T:
-        cls._log.debug(f'Parsing json to dataclass object')
+        cls._log.debug('Parsing json to dataclass object')
 
         if not is_dataclass(dataclass_type):
             cls._log.error(f'Dataclass type expected, but received "{str(type(dataclass_type))}"', exc_info=True)
@@ -22,7 +22,7 @@ class JsonParser:
     @classmethod
     def _parse_dict(cls, dataclass_type: T,
                     json_data: dict) -> T:
-        cls._log.debug(f'Parsing dict to dataclass object')
+        cls._log.debug('Parsing dict to dataclass object')
 
         dataclass_obj: dataclass_type = dataclass_type()
         for dataclass_field in fields(dataclass_type):
@@ -87,7 +87,7 @@ class JsonParser:
     @classmethod
     def _parse_list(cls, class_field_type,
                     json_value: list) -> list:
-        cls._log.debug(f'Parsing list')
+        cls._log.debug('Parsing list')
 
         if get_origin(class_field_type) != list:
             cls._log.error(f'class_field type "{str(class_field_type)}" is not a list', exc_info=True)
