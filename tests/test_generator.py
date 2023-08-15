@@ -1,7 +1,5 @@
-from jto.dataclass_generator import ClassesTemplate, FieldTemplate
+from jto.dataclass_generator import ClassesTemplate, FieldTemplate, ClassTemplate
 from jto.undefined_field import Undefined
-
-from jto.dataclass_generator import ClassTemplate
 
 
 def test_parse_empty_dict():
