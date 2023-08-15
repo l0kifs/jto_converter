@@ -2,6 +2,7 @@ from dataclasses import dataclass, field
 from typing import List, Optional
 
 import pytest
+
 from jto import JTOConverter
 from jto.undefined_field import Undefined
 

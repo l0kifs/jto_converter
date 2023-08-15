@@ -69,25 +69,23 @@ json_object = JTOConverter.to_json(dataclass_object, drop_nones=True)
 print(json_object)
 ```
 Get class templates from json object
+
 ```python
-from jto.dataclass_generator import ClassesTemplate
+from jto.dataclass_generator import DataclassGenerator
 
 data = {
     "status": 200,
     "data": {
-        "first": "qwer",
-        "last": "qwer",
-        "test": [
+        "first": "foo",
+        "last": "bar",
+        "struct": [
             {"f1": "1"},
             {"f1": "2"}
         ]
     }
 }
 
-classes = ClassesTemplate()
-classes.build_classes('Response', data)
-print(classes)
-
-classes_str = classes.build_classes_string()
+classes = DataclassGenerator()
+classes_str = classes.build_classes_string('Response', data)
 print(classes_str)
 ```
