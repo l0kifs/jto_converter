@@ -1,7 +1,7 @@
 import logging
 from dataclasses import is_dataclass, fields, Field
 from types import NoneType
-from typing import get_origin, get_args, TypeVar
+from typing import get_origin, get_args, TypeVar, Any
 
 
 class JsonParser:
@@ -50,6 +50,24 @@ class JsonParser:
             return field.type
 
     @classmethod
+    def _validate_field_value(cls, class_field: Field,
+                              value: Any) -> None:
+        cls._log.debug(f'Validating value "{value}" of field "{class_field.name}"')
+        metadata_key = 'validate'
+
+        if metadata_key not in class_field.metadata:
+            return
+        if not callable(class_field.metadata[metadata_key]):
+            cls._log.error(f'Value of metadata key "{metadata_key}" is not callable', exc_info=True)
+            raise ValueError(f'Value of metadata key "{metadata_key}" is not callable')
+
+        validate_func = class_field.metadata[metadata_key]
+
+        if not validate_func(value):
+            cls._log.error(f'Value "{value}" of field "{class_field.name}" is not valid', exc_info=True)
+            raise ValueError(f'Value "{value}" of field "{class_field.name}" is not valid')
+
+    @classmethod
     def _parse_dict_item(cls, class_field: Field,
                          json_data: dict,
                          result_obj):
@@ -72,7 +90,7 @@ class JsonParser:
                     setattr(result_obj, key, cls._parse_dict(field_type, value))
                     return
                 elif get_origin(field_type) == list:
-                    setattr(result_obj, key, cls._parse_list(field_type, value))
+                    setattr(result_obj, key, cls._parse_list(class_field, field_type, value))
                     return
                 else:
                     if field_type != type(value):
@@ -80,6 +98,7 @@ class JsonParser:
                                        f'but received "{str(type(value))}"', exc_info=True)
                         raise TypeError(f'Expected value type is "{str(field_type)}", '
                                         f'but received "{str(type(value))}"')
+                    cls._validate_field_value(class_field, value)
                     setattr(result_obj, key, value)
                     return
 
@@ -88,21 +107,30 @@ class JsonParser:
             raise ValueError(f'Required field "{class_field.name}" not found in the data "{json_data}"')
 
     @classmethod
-    def _parse_list(cls, class_field_type,
+    def _validate_list(cls, field_type, value):
+        cls._log.debug('Validating list field and its value')
+
+        if get_origin(field_type) != list:
+            cls._log.error(f'class_field type "{str(field_type)}" is not a list', exc_info=True)
+            raise ValueError(f'class_field type "{str(field_type)}" is not a list')
+
+        if get_args(field_type) == ():
+            cls._log.error(f'class_field type "{str(field_type)}" is not a supported list. '
+                           f'Change type to List[YourClass]', exc_info=True)
+            raise ValueError(f'class_field type "{str(field_type)}" is not a supported list. '
+                             f'Change type to List[YourClass]')
+
+        if not isinstance(value, list):
+            cls._log.error(f'json_value type "{str(type(value))}" is not a list.', exc_info=True)
+            raise ValueError(f'json_value type "{str(type(value))}" is not a list.')
+
+    @classmethod
+    def _parse_list(cls, class_field: Field,
+                    class_field_type,
                     json_value: list) -> list:
         cls._log.debug('Parsing list')
 
-        if get_origin(class_field_type) != list:
-            cls._log.error(f'class_field type "{str(class_field_type)}" is not a list', exc_info=True)
-            raise ValueError(f'class_field type "{str(class_field_type)}" is not a list')
-        if get_args(class_field_type) == ():
-            cls._log.error(f'class_field type "{str(class_field_type)}" is not a supported list. '
-                           f'Change type to List[YourClass]', exc_info=True)
-            raise ValueError(f'class_field type "{str(class_field_type)}" is not a supported list. '
-                             f'Change type to List[YourClass]')
-        if not isinstance(json_value, list):
-            cls._log.error(f'json_value type "{str(type(json_value))}" is not a list.', exc_info=True)
-            raise ValueError(f'json_value type "{str(type(json_value))}" is not a list.')
+        cls._validate_list(class_field_type, json_value)
 
         list_item_type = get_args(class_field_type)[0]
 
@@ -112,6 +140,7 @@ class JsonParser:
                 final_item = cls._parse_dict(list_item_type, item)
                 items.append(final_item)
         else:
+            cls._validate_field_value(class_field, json_value)
             items.extend(json_value)
 
         return items

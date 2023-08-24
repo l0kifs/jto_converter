@@ -21,7 +21,7 @@ def test_convert_json_to_dataclass():
 
     @dataclass
     class Book:
-        title: Optional[str] = field(default=Undefined, metadata={'name': 'title', 'required': False})
+        title: Optional[str] = field(default=Undefined, metadata={'name': 'title', 'required': False, 'validate': lambda x: x == 'Python'})
 
     @dataclass
     class Addresses:
@@ -30,7 +30,7 @@ def test_convert_json_to_dataclass():
     @dataclass
     class Data:
         name: Optional[str] = field(default=Undefined, metadata={'name': 'name', 'required': False})
-        ages: Optional[List[int]] = field(default=Undefined, metadata={'name': 'ages', 'required': False})
+        ages: Optional[List[int]] = field(default=Undefined, metadata={'name': 'ages', 'required': False, 'validate': lambda x: len(x) == 3})
         book: Optional[Book] = field(default=Undefined, metadata={'name': 'book', 'required': False})
         addresses: Optional[List[Addresses]] = field(default=Undefined, metadata={'name': 'addresses', 'required': False})
 
