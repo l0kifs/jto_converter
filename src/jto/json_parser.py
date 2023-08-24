@@ -57,18 +57,15 @@ class JsonParser:
 
         if metadata_key not in class_field.metadata:
             return
+        if not callable(class_field.metadata[metadata_key]):
+            cls._log.error(f'Value of metadata key "{metadata_key}" is not callable', exc_info=True)
+            raise ValueError(f'Value of metadata key "{metadata_key}" is not callable')
 
         validate_func = class_field.metadata[metadata_key]
 
-        if isinstance(value, list):
-            for item in value:
-                if not validate_func(item):
-                    cls._log.error(f'Value "{item}" of field {class_field.name} is not valid', exc_info=True)
-                    raise ValueError(f'Value "{item}" of field {class_field.name} is not valid')
-        else:
-            if not validate_func(value):
-                cls._log.error(f'Value "{value}" of field {class_field.name} is not valid', exc_info=True)
-                raise ValueError(f'Value "{value}" of field {class_field.name} is not valid')
+        if not validate_func(value):
+            cls._log.error(f'Value "{value}" of field "{class_field.name}" is not valid', exc_info=True)
+            raise ValueError(f'Value "{value}" of field "{class_field.name}" is not valid')
 
     @classmethod
     def _parse_dict_item(cls, class_field: Field,
