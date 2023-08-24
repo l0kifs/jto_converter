@@ -66,19 +66,22 @@ class JsonParser:
                         raise ValueError(f'Field "{class_field.metadata["name"]}" cannot be null')
                     else:
                         setattr(result_obj, key, value)
+                        return
+
+                if is_dataclass(field_type):
+                    setattr(result_obj, key, cls._parse_dict(field_type, value))
+                    return
+                elif get_origin(field_type) == list:
+                    setattr(result_obj, key, cls._parse_list(field_type, value))
+                    return
                 else:
-                    if is_dataclass(field_type):
-                        setattr(result_obj, key, cls._parse_dict(field_type, value))
-                    elif get_origin(field_type) == list:
-                        setattr(result_obj, key, cls._parse_list(field_type, value))
-                    else:
-                        if field_type != type(value):
-                            cls._log.error(f'Expected value type is "{str(field_type)}", '
-                                           f'but received "{str(type(value))}"', exc_info=True)
-                            raise TypeError(f'Expected value type is "{str(field_type)}", '
-                                            f'but received "{str(type(value))}"')
-                        setattr(result_obj, key, value)
-                return
+                    if field_type != type(value):
+                        cls._log.error(f'Expected value type is "{str(field_type)}", '
+                                       f'but received "{str(type(value))}"', exc_info=True)
+                        raise TypeError(f'Expected value type is "{str(field_type)}", '
+                                        f'but received "{str(type(value))}"')
+                    setattr(result_obj, key, value)
+                    return
 
         if class_field.metadata['required']:
             cls._log.error(f'Required field "{class_field.name}" not found in the data "{json_data}"', exc_info=True)
