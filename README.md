@@ -6,17 +6,20 @@ This package also provides tool for converting json object to dataclass template
 
 ## Requirements
 ### Required structure of dataclass field
-All the parts of the below structure are required.
 ```python
-field_name: Optional[FieldType] = field(default=Undefined, metadata={'name': 'json_field_name', 'required': False})
+field_name: Optional[FieldType] = field(default=Undefined, metadata={'name': 'json_field_name', 'required': False, 'validate': validate_function})
 ```
-- `field_name` can be any variable name.
-- keyword `Optional` indicates that the field is nullable.
-- `FieldType` should be strongly typed.   
+- `field_name` **[required]** can be any variable name.
+-  `Optional` **[optional]** indicates that the field is nullable.
+- `FieldType` **[required]** should be strongly typed.   
 For example in case of field containing the list it should look like this `List[SomeClass]`
-- `default` sets default field's value. Set to `Undefined` by default.
-- `name` is the name of the field in original json.
-- `required` marked `True` if the field is required in the provided json.
+- `default` **[required]** sets default field's value. Set to `Undefined` by default.
+- `name` **[required]** is the name of the field in original json.
+- `required` **[required]** marked `True` if the field is required in the provided json.
+- `validate` **[optional]** is the function that validates the field's value.
+Validate function supports fields with simple types like `str`, `int`, `float`, `bool` and `List` of simple types.
+The function has one argument - field's value. It should return `True` if the value is valid and `False` otherwise. 
+Example lambda function: `lambda x: x > 0`
 
 ### Additional rules
 - If dataclass field value set to `Undefined` then it will not be converted to json field
@@ -51,7 +54,7 @@ class Test:
 
 @dataclass
 class Data:
-    first: Optional[str] = field(default=Undefined, metadata={'name': 'first', 'required': False})
+    first: Optional[str] = field(default=Undefined, metadata={'name': 'first', 'required': False, 'validate': lambda x: x == 'qwer'})
     last: Optional[str] = field(default=Undefined, metadata={'name': 'last', 'required': False})
     test: Optional[List[Test]] = field(default=Undefined, metadata={'name': 'test', 'required': False})
 
