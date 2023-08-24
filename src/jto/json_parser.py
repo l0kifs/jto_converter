@@ -108,7 +108,7 @@ class JsonParser:
 
     @classmethod
     def _validate_list(cls, field_type, value):
-        cls._log.debug(f'Validating list field and its value')
+        cls._log.debug('Validating list field and its value')
 
         if get_origin(field_type) != list:
             cls._log.error(f'class_field type "{str(field_type)}" is not a list', exc_info=True)
