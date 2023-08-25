@@ -1,5 +1,7 @@
 import logging
-from dataclasses import is_dataclass, asdict
+from dataclasses import is_dataclass, Field
+from types import NoneType
+from typing import get_args, get_origin
 
 from jto.undefined_field import Undefined
 
@@ -8,74 +10,55 @@ class JsonBuilder:
     _log = logging.getLogger(__name__)
 
     @classmethod
-    def build_json(cls, dataclass_obj,
-                   drop_nones: bool) -> dict:
+    def _is_nullable(cls, field_: Field) -> bool:
+        type_args = get_args(field_.type)
+        if NoneType in type_args:
+            return True
+        else:
+            return False
+
+    @classmethod
+    def _is_list_of_dataclasses(cls, field_: Field) -> bool:
+        type_args = get_args(field_.type)
+        inner_type = field_.type
+        if NoneType in type_args:
+            inner_type = [arg for arg in type_args if arg is not NoneType][0]
+        if get_origin(inner_type) is list:
+            if is_dataclass(get_args(inner_type)[0]):
+                return True
+        return False
+
+    @classmethod
+    def _parse_dataclass(cls, dataclass_obj) -> dict:
+        result_dict = {}
+        for field_ in dataclass_obj.__dataclass_fields__.values():
+            field_value = getattr(dataclass_obj, field_.name)
+
+            if field_value == Undefined:
+                continue
+
+            if field_value is None:
+                if not cls._is_nullable(field_):
+                    continue
+
+            elif is_dataclass(field_value):
+                result_dict[field_.metadata['name']] = cls._parse_dataclass(field_value)
+            elif cls._is_list_of_dataclasses(field_):
+                result_list = []
+                for item in field_value:
+                    result_list.append(cls._parse_dataclass(item))
+                result_dict[field_.metadata['name']] = result_list
+            else:
+                result_dict[field_.metadata['name']] = field_value
+        return result_dict
+
+    @classmethod
+    def build_json(cls, dataclass_obj) -> dict:
         cls._log.debug('Building json from dataclass object')
 
         if not is_dataclass(dataclass_obj):
             cls._log.error(f'Dataclass type object expected, but received "{str(type(dataclass_obj))}"', exc_info=True)
             raise ValueError(f'Dataclass type object expected, but received "{str(type(dataclass_obj))}"')
 
-        result_dict = asdict(dataclass_obj)
-        result_dict = cls._drop_undefined(result_dict)
-        if drop_nones:
-            result_dict = cls._drop_nones(result_dict)
+        result_dict = cls._parse_dataclass(dataclass_obj)
         return result_dict
-
-    @classmethod
-    def _drop_undefined(cls, original_dict: dict) -> dict:
-        cls._log.debug('Dropping undefined fields from dict')
-
-        result_dict = {}
-        for key, value in original_dict.items():
-            if value != Undefined:
-                if isinstance(value, dict):
-                    result_dict[key] = cls._drop_undefined(value)
-                elif isinstance(value, (list, set, tuple)):
-                    result_dict[key] = cls._drop_undefined_in_list(value)
-                else:
-                    result_dict[key] = value
-        return result_dict
-
-    @classmethod
-    def _drop_undefined_in_list(cls, original_list: list) -> list:
-        cls._log.debug('Dropping undefined fields from list')
-
-        result_list = []
-        for value in original_list:
-            if value != Undefined:
-                if isinstance(value, dict):
-                    result_list.append(cls._drop_undefined(value))
-                elif isinstance(value, (list, set, tuple)):
-                    result_list.append(cls._drop_undefined_in_list(value))
-                else:
-                    result_list.append(value)
-        return result_list
-
-    @classmethod
-    def _drop_nones(cls, original_dict: dict) -> dict:
-        cls._log.debug('Dropping None fields from dict')
-
-        result_dict = {}
-        for key, value in original_dict.items():
-            if isinstance(value, dict):
-                result_dict[key] = cls._drop_nones(value)
-            elif isinstance(value, (list, set, tuple)):
-                result_dict[key] = cls._drop_nones_in_list(value)
-            elif value is not None:
-                result_dict[key] = value
-        return result_dict
-
-    @classmethod
-    def _drop_nones_in_list(cls, original_list: list) -> list:
-        cls._log.debug('Dropping None fields from list')
-
-        result_list = []
-        for value in original_list:
-            if isinstance(value, dict):
-                result_list.append(cls._drop_nones(value))
-            elif isinstance(value, (list, set, tuple)):
-                result_list.append(cls._drop_nones_in_list(value))
-            else:
-                result_list.append(value)
-        return result_list

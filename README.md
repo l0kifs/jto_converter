@@ -23,8 +23,8 @@ Example lambda function: `lambda x: x > 0`
 
 ### Additional rules
 - If dataclass field value set to `Undefined` then it will not be converted to json field
-- If `to_json` method's argument `drop_nones` set to `True` 
-then all dataclass fields with `None` values will not be converted to json field
+- If dataclass field type is not `Optional`
+then all dataclass fields with `None` values will not be converted to json fields
 
 ## Examples
 
@@ -68,7 +68,7 @@ dataclass_object = JTOConverter.from_json(Response, data)
 print(dataclass_object)
 
 dataclass_object.status = None
-json_object = JTOConverter.to_json(dataclass_object, drop_nones=True)
+json_object = JTOConverter.to_json(dataclass_object)
 print(json_object)
 ```
 Get class templates from json object
