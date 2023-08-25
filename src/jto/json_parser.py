@@ -83,14 +83,14 @@ class JsonParser:
                         cls._log.error(f'Field "{class_field.metadata["name"]}" cannot be null', exc_info=True)
                         raise ValueError(f'Field "{class_field.metadata["name"]}" cannot be null')
                     else:
-                        setattr(result_obj, key, value)
+                        setattr(result_obj, class_field.name, value)
                         return
 
                 if is_dataclass(field_type):
-                    setattr(result_obj, key, cls._parse_dict(field_type, value))
+                    setattr(result_obj, class_field.name, cls._parse_dict(field_type, value))
                     return
                 elif get_origin(field_type) == list:
-                    setattr(result_obj, key, cls._parse_list(class_field, field_type, value))
+                    setattr(result_obj, class_field.name, cls._parse_list(class_field, field_type, value))
                     return
                 else:
                     if field_type != type(value):
@@ -99,7 +99,7 @@ class JsonParser:
                         raise TypeError(f'Expected value type is "{str(field_type)}", '
                                         f'but received "{str(type(value))}"')
                     cls._validate_field_value(class_field, value)
-                    setattr(result_obj, key, value)
+                    setattr(result_obj, class_field.name, value)
                     return
 
         if class_field.metadata['required']:
