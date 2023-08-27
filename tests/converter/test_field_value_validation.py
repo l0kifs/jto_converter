@@ -17,7 +17,7 @@ def test_validate_simple_value():
     dataclass_object = JTOConverter.from_json(Test, data)
     assert dataclass_object == Test(f1='f1')
 
-    json_object = JTOConverter.to_json(dataclass_object, drop_nones=True)
+    json_object = JTOConverter.to_json(dataclass_object)
     assert json_object == data
 
 
@@ -44,7 +44,7 @@ def test_validate_list_value():
     dataclass_object = JTOConverter.from_json(Test, data)
     assert dataclass_object == Test(f1=["f1", "f2"])
 
-    json_object = JTOConverter.to_json(dataclass_object, drop_nones=True)
+    json_object = JTOConverter.to_json(dataclass_object)
     assert json_object == data
 
 
@@ -71,7 +71,7 @@ def test_validate_dict_value():
     dataclass_object = JTOConverter.from_json(Test, data)
     assert dataclass_object == Test(f1={"f2": "f2"})
 
-    json_object = JTOConverter.to_json(dataclass_object, drop_nones=True)
+    json_object = JTOConverter.to_json(dataclass_object)
     assert json_object == data
 
 
@@ -102,7 +102,7 @@ def test_validate_dataclass_value():
     dataclass_object = JTOConverter.from_json(Test, data)
     assert dataclass_object == Test(f1=Test2(f2='f2'))
 
-    json_object = JTOConverter.to_json(dataclass_object, drop_nones=True)
+    json_object = JTOConverter.to_json(dataclass_object)
     assert json_object == data
 
 

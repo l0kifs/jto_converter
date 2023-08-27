@@ -23,14 +23,12 @@ class JTOConverter:
         return result
 
     @classmethod
-    def to_json(cls, dataclass_obj,
-                drop_nones: bool = False) -> dict:
+    def to_json(cls, dataclass_obj) -> dict:
         """
         Convert dataclass object to json
         :param dataclass_obj: dataclass object
-        :param drop_nones: drop None values
         :return: json object
         """
         cls._log.debug('Converting dataclass object to json')
-        result = JsonBuilder.build_json(dataclass_obj, drop_nones)
+        result = JsonBuilder.build_json(dataclass_obj)
         return result

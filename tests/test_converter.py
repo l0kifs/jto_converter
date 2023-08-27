@@ -60,7 +60,7 @@ def test_convert_empty_dict():
     dataclass_object = JTOConverter.from_json(Test, data)
     assert dataclass_object == Test()
 
-    json_object = JTOConverter.to_json(dataclass_object, drop_nones=True)
+    json_object = JTOConverter.to_json(dataclass_object)
     assert json_object == {}
 
 
@@ -129,7 +129,7 @@ def test_convert_dataclass_to_json():
 
     dataclass_object = Request(1, 'aaa', 2, 3.33)
 
-    json_object = JTOConverter.to_json(dataclass_object, drop_nones=False)
+    json_object = JTOConverter.to_json(dataclass_object)
 
     expected_json = {'Id': 1, 'Customer': 'aaa', 'Quantity': 2, 'Price': 3.33}
     assert json_object == expected_json
