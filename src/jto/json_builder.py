@@ -61,7 +61,7 @@ class JsonBuilder:
 
         if not is_dataclass(dataclass_obj):
             cls._log.error(f'Dataclass type object expected, but received "{str(type(dataclass_obj))}"', exc_info=True)
-            raise ValueError(f'Dataclass type object expected, but received "{str(type(dataclass_obj))}"')
+            raise TypeError(f'Dataclass type object expected, but received "{str(type(dataclass_obj))}"')
 
         result_dict = cls._parse_dataclass(dataclass_obj)
         return result_dict

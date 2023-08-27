@@ -1,6 +1,8 @@
 from dataclasses import dataclass, field
 from typing import Optional, List
 
+import pytest
+
 from jto import JTOConverter
 from jto.undefined_field import Undefined
 
@@ -103,3 +105,8 @@ def test_list_of_dataclasses_field_with_undefined():
 
     json_object = JTOConverter.to_json(test_obj)
     assert json_object == expected_json
+
+
+def test_dataclass_obj_is_not_dataclass():
+    with pytest.raises(TypeError):
+        JTOConverter.to_json('test')

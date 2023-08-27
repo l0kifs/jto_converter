@@ -43,5 +43,15 @@ def test_empty_list_value():
     generator = DataclassGenerator()
     classes_str = generator.build_classes_string('Response', data)
 
-    assert classes_str == "@dataclass\nclass Response:\n    var: Optional[List[<class 'object'>]] = " \
-                          "field(default=Undefined, metadata={'name': 'var', 'required': False})"
+    assert classes_str == ("@dataclass\nclass Response:\n"
+                           "    var: Optional[List[<class 'object'>]] = field(default=Undefined, metadata={'name': 'var', 'required': False})")
+
+
+def test_list_of_simple_values():
+    data = {'var': [1, 2, 3]}
+
+    generator = DataclassGenerator()
+    classes_str = generator.build_classes_string('Response', data)
+
+    assert classes_str == ("@dataclass\nclass Response:\n"
+                           "    var: Optional[List[int]] = field(default=Undefined, metadata={'name': 'var', 'required': False})")
