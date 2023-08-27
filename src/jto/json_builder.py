@@ -11,6 +11,7 @@ class JsonBuilder:
 
     @classmethod
     def _is_nullable(cls, field_: Field) -> bool:
+        cls._log.debug('Checking if field is nullable')
         type_args = get_args(field_.type)
         if NoneType in type_args:
             return True
@@ -19,6 +20,7 @@ class JsonBuilder:
 
     @classmethod
     def _is_list_of_dataclasses(cls, field_: Field) -> bool:
+        cls._log.debug('Checking if field is list of dataclasses')
         type_args = get_args(field_.type)
         inner_type = field_.type
         if NoneType in type_args:
@@ -30,6 +32,7 @@ class JsonBuilder:
 
     @classmethod
     def _parse_dataclass(cls, dataclass_obj) -> dict:
+        cls._log.debug('Parsing dataclass object')
         result_dict = {}
         for field_ in dataclass_obj.__dataclass_fields__.values():
             field_value = getattr(dataclass_obj, field_.name)
@@ -40,7 +43,7 @@ class JsonBuilder:
             if field_value is None:
                 if not cls._is_nullable(field_):
                     continue
-
+                result_dict[field_.metadata['name']] = None
             elif is_dataclass(field_value):
                 result_dict[field_.metadata['name']] = cls._parse_dataclass(field_value)
             elif cls._is_list_of_dataclasses(field_):
