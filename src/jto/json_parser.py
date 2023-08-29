@@ -106,31 +106,31 @@ class JsonParser:
             cls._log.error(f'Required field "{class_field.name}" not found in the data "{json_data}"', exc_info=True)
             raise ValueError(f'Required field "{class_field.name}" not found in the data "{json_data}"')
 
-    @classmethod
-    def _validate_list(cls, field_type, value):
-        cls._log.debug('Validating list field and its value')
-
-        if get_origin(field_type) != list:
-            cls._log.error(f'class_field type "{str(field_type)}" is not a list', exc_info=True)
-            raise ValueError(f'class_field type "{str(field_type)}" is not a list')
-
-        if get_args(field_type) == ():
-            cls._log.error(f'class_field type "{str(field_type)}" is not a supported list. '
-                           f'Change type to List[YourClass]', exc_info=True)
-            raise ValueError(f'class_field type "{str(field_type)}" is not a supported list. '
-                             f'Change type to List[YourClass]')
-
-        if not isinstance(value, list):
-            cls._log.error(f'json_value type "{str(type(value))}" is not a list.', exc_info=True)
-            raise ValueError(f'json_value type "{str(type(value))}" is not a list.')
+    # method currently not used because of upper level validations
+    # @classmethod
+    # def _validate_list(cls, field_type, value):
+    #     cls._log.debug('Validating list field and its value')
+    #
+    #     if get_origin(field_type) != list:
+    #         cls._log.error(f'class_field type "{str(field_type)}" is not a list', exc_info=True)
+    #         raise TypeError(f'class_field type "{str(field_type)}" is not a list')
+    #
+    #     if get_args(field_type) == ():
+    #         cls._log.error(f'class_field type "{str(field_type)}" is not a supported list. '
+    #                        f'Change type to List[YourClass]', exc_info=True)
+    #         raise TypeError(f'class_field type "{str(field_type)}" is not a supported list. '
+    #                         f'Change type to List[YourClass]')
+    #
+    #     if not isinstance(value, list):
+    #         cls._log.error(f'json_value type "{str(type(value))}" is not a list.', exc_info=True)
+    #         raise TypeError(f'json_value type "{str(type(value))}" is not a list.')
 
     @classmethod
     def _parse_list(cls, class_field: Field,
                     class_field_type,
                     json_value: list) -> list:
         cls._log.debug('Parsing list')
-
-        cls._validate_list(class_field_type, json_value)
+        # cls._validate_list(class_field_type, json_value)
 
         list_item_type = get_args(class_field_type)[0]
 
